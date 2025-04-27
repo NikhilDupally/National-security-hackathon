@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoSpatial Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --background: #0a1929;
+            --surface: #132f4c;
+            --text: #ffffff;
+            --accent: #4fd1c5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--text), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 242, 254, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-container {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            aspect-ratio: 16/9;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);
+        }
+
+        .analysis {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(0, 242, 254, 0.1);
+        }
+
+        .analysis h2 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .analysis-content {
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .history {
+            margin-top: 3rem;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 242, 254, 0.1);
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 25, 41, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading::after {
+            content: "";
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--surface);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: loading 1s infinite linear;
+        }
+
+        @keyframes loading {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #history-analysis {
+            background: linear-gradient(135deg, var(--surface), rgba(19, 47, 76, 0.8));
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(0, 242, 254, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 242, 254, 0.1);
+        }
+
+        .initial-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .initial-loader h2 {
+            color: var(--primary);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 242, 254, 0.1);
+            border-radius: 8px;
+            margin-left: 1rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="initial-loader" class="initial-loader">
+        <h2>Initializing Environmental Monitoring System</h2>
+        <div class="loading"></div>
+    </div>
+
+    <header>
+        <div class="container header-content">
+            <div style="display: flex; align-items: center;">
+                <h1>Environmental Change Monitor</h1>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Live Monitoring</span>
+                </div>
+            </div>
+            <button class="btn" onclick="getNextImages()">Analyze New Area</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <div class="image-container">
+                    <img id="image1" alt="Base satellite image">
+                </div>
+                <h3>Base Image</h3>
+            </div>
+            <div class="card">
+                <div class="image-container">
+                    <img id="image2" alt="Recent satellite image">
+                </div>
+                <h3>Recent Image</h3>
+            </div>
+            <div class="card">
+                <div class="image-container">
+                    <img id="diff" alt="Environmental changes">
+                </div>
+                <h3>Change Detection</h3>
+            </div>
+        </div>
+
+        <div class="analysis">
+            <h2>Environmental Analysis</h2>
+            <div id="analysis" class="analysis-content">
+                Select "Analyze New Area" to begin monitoring.
+            </div>
+        </div>
+
+        <div class="history">
+            <h2>Monitoring History</h2>
+            <button class="btn" onclick="analyzeHistory()">Generate Impact Report</button>
+            <div id="history-analysis"></div>
+            <div id="history-container"></div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading" style="display: none;"></div>
+
+    <script>
+        let pollInterval;
+        const POLL_INTERVAL = 10000; // 10 seconds
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function hideInitialLoader() {
+            document.getElementById('initial-loader').style.display = 'none';
+        }
+
+        async function getNextImages() {
+            showLoading();
+            try {
+                const response = await fetch('/get_images');
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('analysis').textContent = data.error;
+                    return;
+                }
+
+                document.getElementById('image1').src = 'data:image/jpeg;base64,' + data.img1;
+                document.getElementById('image2').src = 'data:image/jpeg;base64,' + data.img2;
+                document.getElementById('diff').src = 'data:image/jpeg;base64,' + data.diff;
+                document.getElementById('analysis').textContent = data.analysis;
+                
+                await updateHistory();
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+                hideInitialLoader();
+            }
+        }
+
+        async function updateHistory() {
+            try {
+                const response = await fetch('/get_history');
+                const history = await response.json();
+                
+                const container = document.getElementById('history-container');
+                container.innerHTML = '';
+                
+                history.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <p><strong>Time:</strong> ${item.timestamp}</p>
+                        <p><strong>Images:</strong> ${item.image1_name} → ${item.image2_name}</p>
+                        <p><strong>Changes:</strong> ${item.change_count}</p>
+                        <p><strong>Analysis:</strong> ${item.analysis}</p>
+                    `;
+                    container.appendChild(historyItem);
+                });
+            } catch (error) {
+                console.error('Error updating history:', error);
+            }
+        }
+
+        async function analyzeHistory() {
+            showLoading();
+            try {
+                const response = await fetch('/analyze_history');
+                const analysis = await response.text();
+                document.getElementById('history-analysis').innerHTML = `
+                    <h3>Strategic Assessment</h3>
+                    <p class="analysis-content">${analysis}</p>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function startPolling() {
+            getNextImages(); // Initial load
+            pollInterval = setInterval(getNextImages, POLL_INTERVAL);
+        }
+
+        // Start everything when the page loads
+        window.onload = startPolling;
+    </script>
+</body>
+</html>
